@@ -16,14 +16,15 @@
          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
      </rowConstraints>
       <children>
-         <Button fx:id="showGraphBtn" mnemonicParsing="false" onAction="#showGraphCanvas" text="Draw Graph" GridPane.rowIndex="1" />
-         <Button fx:id="addCellBtn" mnemonicParsing="false" onAction="#addCell" text="Add Vertex" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+         <Button fx:id="showGraphBtn" mnemonicParsing="false" onAction="#showGraphCanvas" text="Draw graph" GridPane.rowIndex="1" />
+         <Button fx:id="addCellBtn" mnemonicParsing="false" onAction="#addCell" text="Add vertex" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          <TextField fx:id="edgeStart" promptText="Cell 1" GridPane.rowIndex="2" />
          <TextField fx:id="edgeEnd" promptText="Cell 2" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-         <Button fx:id="addEdgeBtn" mnemonicParsing="false" onAction="#addEdge" text="Add Edge" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+         <Button fx:id="addEdgeBtn" mnemonicParsing="false" onAction="#addEdge" text="Add edge" GridPane.columnIndex="2" GridPane.rowIndex="2" />
          <Button fx:id="loadFromFIle" mnemonicParsing="false" onAction="#loadFromFile" text="Load graph" />
          <Button fx:id="saveToFile" mnemonicParsing="false" onAction="#saveToFile" text="Save graph" GridPane.columnIndex="1" />
-         <Button fx:id="labelingBtn" mnemonicParsing="false" onAction="#startLabeling" text="Labeling" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+         <Button fx:id="softSolvingBtn" mnemonicParsing="false" onAction="#softSolving" text="Soft Solving" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+         <Button fx:id="hardSolvingButton" mnemonicParsing="false" onAction="#hardSolving" text="Hard solving" GridPane.columnIndex="2" />
       </children>
    </GridPane>
    <columnConstraints>

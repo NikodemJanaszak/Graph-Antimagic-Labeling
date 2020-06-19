@@ -13,7 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.chocosolver.solver.variables.IntVar;
+import Solver.AntymagicLabelingSolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,6 +80,7 @@ public class Controller {
         Graph graph = GraphUtilities.read_from_file(file.getAbsolutePath());
         Stage graphStage = new Stage();
         BorderPane root = new BorderPane();
+        graph = AntymagicLabelingSolver.solve_graph(graph, true);
         graphDraw = mapGraphToGraphDraw(graph);
         root.setCenter(graphDraw.getScrollPane());
         Scene scene = new Scene(root, 1024, 768);
@@ -107,8 +108,7 @@ public class Controller {
         int i = 0;
         List<Vertex> vertexListToAdd = new ArrayList<>();
         for (Cell c : toMapGraph.getModel().getAllCells()) {
-            Vertex vertex = new Vertex(i, c.getCellId());
-            vertexListToAdd.add(vertex);
+            vertexListToAdd.add(new Vertex(i, c.getCellId()));
             i++;
         }
         graph.setVertices(vertexListToAdd);
@@ -128,12 +128,11 @@ public class Controller {
                     targetVertex = new Vertex(v.getId(), v.getName());
                 }
             }
-            Edge edge = new Edge(sourceVertex, targetVertex);
-            edgesListToAdd.add(edge);
+            edgesListToAdd.add(new Edge(sourceVertex, targetVertex));
         }
         graph.setEdges(edgesListToAdd);
-        graph.getEdges().toString();
-        graph.getVertices().toString();
+        System.out.println(graph.getEdges().toString());
+        System.out.println(graph.getVertices().toString());
         return graph;
     }
 
@@ -153,46 +152,9 @@ public class Controller {
         return mappedGraph;
     }
 
-    @FXML
-    private void startLabeling() {
+    private void labeling(Graph g, boolean hard_labeling) {
+        g = AntymagicLabelingSolver.solve_graph(g, hard_labeling);
 
-        // The model is the main component of Choco Solver
-        org.chocosolver.solver.Model modelSolver = new org.chocosolver.solver.Model("Graph Antymagic Labeling with Choco Solver");
-
-        //Creating new graph
-        Graph g = mapGraphDrawToGraph(graphDraw);
-
-        // Get all edges which are connected with selected vertex and parse them int IntVar[]
-        for (Vertex v : g.getVertices()) {
-            v.setInitSolver_var(modelSolver);
-            List<IntVar> edges_per_vertex_var_arraylist = new ArrayList<IntVar>();
-
-            for (Edge e : g.getEdges()) {
-                e.setInitSolver_var(modelSolver);
-                if (v.getId() == e.getV1().getId() || v.getId() == e.getV2().getId()) {
-                    edges_per_vertex_var_arraylist.add(e.getSolverVar());
-                }
-            }
-
-            IntVar[] edges_per_vertex_var_array = new IntVar[edges_per_vertex_var_arraylist.size()];
-            edges_per_vertex_var_array = edges_per_vertex_var_arraylist.toArray(edges_per_vertex_var_array);
-
-            modelSolver.allDifferent(edges_per_vertex_var_array).post();  // Comment this line to make labeling soft (edge values can repeat)
-            modelSolver.sum(edges_per_vertex_var_array, "=", v.getSolverVar()).post(); // Makes sum constraint, exmp. e1+e2+e3=v1
-        }
-
-        //Get IntVar[] of vertices
-        IntVar[] vertex_var_array = new IntVar[g.getVertices().size()];
-        for (int i = 0; i < vertex_var_array.length; i++) {
-            vertex_var_array[i] = g.getVertices().get(i).getSolverVar();
-        }
-
-        modelSolver.allDifferent(vertex_var_array).post(); // Makes vertex sum unique
-
-        modelSolver.getSolver().solve(); // Repeating this function gives next solutions (if they exist)
-
-
-        //Print solution
         for (Vertex v : g.getVertices()) {
             System.out.println("Vertex: " + v.getSolverVar());
 
@@ -203,8 +165,6 @@ public class Controller {
                 }
             }
         }
-
-        System.out.print("\n");
 
         for (Edge e : g.getEdges()) {
             System.out.println("Edge: " + e.getSolverVar());
@@ -227,7 +187,19 @@ public class Controller {
                     drawEdge.relocateText();
                 }
             }
-
         }
     }
+
+    @FXML
+    private void hardSolving() {
+        Graph g = mapGraphDrawToGraph(graphDraw);
+        labeling(g, true);
+    }
+
+    @FXML
+    private void softSolving() {
+        Graph g = mapGraphDrawToGraph(graphDraw);
+        labeling(g, false);
+    }
 }
+

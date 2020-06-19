@@ -27,3 +27,5 @@ output_graph.txt
 .settings/
 .classpath
 .project
+/target/
+/graph-app/manifest.mf
